@@ -14,7 +14,10 @@ class AccountsWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
-
+    if (!element) throw new Error('Element not provided');
+    this.element = element;
+    this.registerEvents();
+    this.update();
   }
 
   /**
@@ -25,7 +28,14 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
-
+    this.element.addEventListener('click', (e) => {
+      if (e.target.closest('.create-account')) {
+        App.getModal('createAccount').open();
+      }
+      if (e.target.closest('.account')) {
+        this.onSelectAccount(e.target.closest('.account'));
+      }
+    });
   }
 
   /**
@@ -39,8 +49,26 @@ class AccountsWidget {
    * метода renderItem()
    * */
   update() {
-
+    if (User.current()) {
+      Account.list({}, (response) => {
+        if (response && response.success) {
+          this.clear();
+          this.renderItem(response.data);
+        } else {
+          console.error('Failed to load accounts:', response);
+        }
+      });
+    }
+  // if (User.current()) {
+  //   Account.list({}, (error, response) => {
+  //     if (!error && response && response.success) {
+  //       this.clear();
+  //       this.renderItem(response.data);
+  //     }
+  //   });
+  // }
   }
+
 
   /**
    * Очищает список ранее отображённых счетов.
@@ -48,7 +76,7 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-
+    this.element.querySelectorAll('.account').forEach(account => account.remove());
   }
 
   /**
@@ -59,7 +87,9 @@ class AccountsWidget {
    * Вызывает App.showPage( 'transactions', { account_id: id_счёта });
    * */
   onSelectAccount( element ) {
-
+    this.element.querySelectorAll('.account').forEach(account => account.classList.remove('active'));
+    element.classList.add('active');
+    App.showPage('transactions', { account_id: element.dataset.id });
   }
 
   /**
@@ -67,8 +97,13 @@ class AccountsWidget {
    * отображения в боковой колонке.
    * item - объект с данными о счёте
    * */
-  getAccountHTML(item){
-
+  getAccountHTML(item) {
+    return `<li class="account" data-id="${item.id}">
+      <a href="#">
+          <span>${item.name}</span> /
+          <span>${item.sum} ₽</span>
+      </a>
+    </li>`;
   }
 
   /**
@@ -77,7 +112,9 @@ class AccountsWidget {
    * AccountsWidget.getAccountHTML HTML-код элемента
    * и добавляет его внутрь элемента виджета
    * */
-  renderItem(data){
-
+  renderItem(data) {
+    data.forEach(item => {
+      this.element.insertAdjacentHTML('beforeend', this.getAccountHTML(item));
+    });
   }
 }
