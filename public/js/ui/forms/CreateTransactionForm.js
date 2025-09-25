@@ -19,15 +19,11 @@
   renderAccountsList() {
     const select = this.element.querySelector('select[name="account_id"]');
     if (!select) return;
-    Account.list({}, (response) => {
-      if (response && response.success) {
-        select.innerHTML = '';
-        response.data.forEach(account => {
-          const option = document.createElement('option');
-          option.value = account.id;
-          option.textContent = account.name;
-          select.appendChild(option);
-        });
+    Account.list({}, (error, response) => {
+      if (!error && response && response.success) {
+        select.innerHTML = response.data.reduce((html, account) => {
+          return html + `<option value="${account.id}">${account.name}</option>`;
+        }, '');
       } else {
         console.error('Failed to load accounts for select:', response);
       }

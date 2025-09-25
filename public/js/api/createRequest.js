@@ -12,38 +12,35 @@ const createRequest = (options = {}) => {
   } = options;
 
   const xhr = new XMLHttpRequest();
+  let requestData = null;
   let requestUrl = url;
 
-  // Для GET-запроса добавляем параметры в URL
-  if (method === 'GET' && Object.keys(data).length > 0) {
-    const params = Object.entries(data)
-      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
-      .join('&');
-    requestUrl += (requestUrl.includes('?') ? '&' : '?') + params;
+  // Формируем данные для запроса
+  if (Object.keys(data).length > 0) {
+    if (method === 'GET') {
+      const params = Object.entries(data)
+        .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+        .join('&');
+      requestUrl += (requestUrl.includes('?') ? '&' : '?') + params;
+    } else {
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      requestData = formData;
+    }
   }
 
   xhr.open(method, requestUrl);
   xhr.responseType = responseType;
 
   xhr.onload = () => {
-    if (xhr.status >= 200 && xhr.status < 300) {
-      callback(null, xhr.response);
-    } else {
-      callback(xhr.statusText || 'Request failed', null);
-    }
+    callback(null, xhr.response);
   };
 
   xhr.onerror = () => {
     callback('Network error', null);
   };
 
-  if (method !== 'GET' && Object.keys(data).length > 0) {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-    xhr.send(formData);
-  } else {
-    xhr.send();
-  }
+  xhr.send(requestData);
 };

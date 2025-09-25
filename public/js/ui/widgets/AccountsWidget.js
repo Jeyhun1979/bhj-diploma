@@ -50,8 +50,8 @@ class AccountsWidget {
    * */
   update() {
     if (User.current()) {
-      Account.list({}, (response) => {
-        if (response && response.success) {
+      Account.list({}, (error, response) => {
+        if (!error && response && response.success) {
           this.clear();
           this.renderItem(response.data);
         } else {
@@ -59,16 +59,7 @@ class AccountsWidget {
         }
       });
     }
-  // if (User.current()) {
-  //   Account.list({}, (error, response) => {
-  //     if (!error && response && response.success) {
-  //       this.clear();
-  //       this.renderItem(response.data);
-  //     }
-  //   });
-  // }
   }
-
 
   /**
    * Очищает список ранее отображённых счетов.
@@ -112,9 +103,10 @@ class AccountsWidget {
    * AccountsWidget.getAccountHTML HTML-код элемента
    * и добавляет его внутрь элемента виджета
    * */
+
   renderItem(data) {
-    data.forEach(item => {
-      this.element.insertAdjacentHTML('beforeend', this.getAccountHTML(item));
-    });
-  }
+  const html = data.reduce((acc, item) => acc + this.getAccountHTML(item), '');
+  this.element.insertAdjacentHTML('beforeend', html);
+}
+
 }

@@ -2,7 +2,7 @@
  * Класс Entity - базовый для взаимодействия с сервером.
  * Имеет свойство URL, равно пустой строке.
  * */
- class Entity {
+class Entity {
   /**
    * Запрашивает с сервера список данных.
    * Это могут быть счета или доходы/расходы
@@ -16,9 +16,7 @@
       method: 'GET',
       data,
       responseType: 'json',
-      callback: (error, response) => {
-        callback(response);
-      }
+      callback
     });
   }
 
@@ -33,9 +31,7 @@
       method: 'PUT',
       data,
       responseType: 'json',
-      callback: (error, response) => {
-        callback(error, response);
-      }
+      callback
     });
   }
 
@@ -43,15 +39,13 @@
    * Удаляет информацию о счёте или доходе/расходе
    * (в зависимости от того, что наследуется от Entity)
    * */
-  static remove(data, callback ) {
+  static remove(data, callback) {
     createRequest({
       url: this.URL,
       method: 'DELETE',
       data,
       responseType: 'json',
-      callback: (error, response) => {
-        callback(error, response);
-      }
+      callback
     });
   }
 }

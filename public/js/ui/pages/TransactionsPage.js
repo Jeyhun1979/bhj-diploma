@@ -181,11 +181,12 @@
   renderTransactions(data){
     const content = this.element.querySelector('.content');
     if (content) {
-      content.innerHTML = '';
       if (Array.isArray(data)) {
-        data.forEach(item => {
-          content.innerHTML += this.getTransactionHTML(item);
-        });
+        content.innerHTML = data.reduce((html, item) => {
+          return html + this.getTransactionHTML(item);
+        }, '');
+      } else {
+        content.innerHTML = '';
       }
     }
   }

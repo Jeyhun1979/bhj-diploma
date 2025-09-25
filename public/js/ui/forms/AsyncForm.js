@@ -5,7 +5,7 @@
  * с таких форм собираются и передаются в метод onSubmit
  * для последующей обработки
  * */
-class AsyncForm {
+ class AsyncForm {
   /**
    * Если переданный элемент не существует,
    * необходимо выкинуть ошибку.
@@ -38,11 +38,7 @@ class AsyncForm {
    * */
   getData() {
     const formData = new FormData(this.element);
-    const data = {};
-    for (let [key, value] of formData.entries()) {
-      data[key] = value;
-    }
-    return data;
+    return Object.fromEntries(formData.entries());
   }
 
   onSubmit(options){

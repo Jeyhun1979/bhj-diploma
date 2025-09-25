@@ -23,44 +23,42 @@ class Sidebar {
       toggleButton.addEventListener('click', (e) => {
         e.preventDefault();
         const body = document.body;
-        if (body.classList.contains('sidebar-open')) {
-          body.classList.remove('sidebar-open');
-          body.classList.add('sidebar-collapse');
-        } else {
-          body.classList.remove('sidebar-collapse');
-          body.classList.add('sidebar-open');
-        }
+        body.classList.toggle('sidebar-open');
+        body.classList.toggle('sidebar-collapse');
       });
     }
   }
 
   /**
-   * При нажатии на кнопку входа, показывает окно входа
-   * (через найденное в App.getModal)
-   * При нажатии на кнопку регастрации показывает окно регистрации
-   * При нажатии на кнопку выхода вызывает User.logout и по успешному
-   * выходу устанавливает App.setState( 'init' )
+   * Добавляет обработчики событий на каждую кнопку меню отдельно
    * */
   static initAuthLinks() {
-    const sidebar = document.querySelector('.sidebar');
-    if (sidebar) {
-      sidebar.addEventListener('click', (e) => {
-        if (e.target.closest('.menu-item_login')) {
-          e.preventDefault();
-          App.getModal('login').open();
-        }
-        if (e.target.closest('.menu-item_register')) {
-          e.preventDefault();
-          App.getModal('register').open();
-        }
-        if (e.target.closest('.menu-item_logout')) {
-          e.preventDefault();
-          User.logout((error, response) => {
-            if (!error && response && response.success) {
-              App.setState('init');
-            }
-          });
-        }
+    const loginButton = document.querySelector('.menu-item_login');
+    const registerButton = document.querySelector('.menu-item_register');
+    const logoutButton = document.querySelector('.menu-item_logout');
+
+    if (loginButton) {
+      loginButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        App.getModal('login').open();
+      });
+    }
+
+    if (registerButton) {
+      registerButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        App.getModal('register').open();
+      });
+    }
+
+    if (logoutButton) {
+      logoutButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        User.logout((error, response) => {
+          if (!error && response && response.success) {
+            App.setState('init');
+          }
+        });
       });
     }
   }
